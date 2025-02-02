@@ -25,7 +25,10 @@ namespace PhysicsDemo
             public const double CircleRadius = 10;
             public const double Restitution = 0.8;
             public const double TangentFriction = 0.9;
-            public const double RotationSpeed = 30;
+            public const double BaseRotationSpeed = 30;  // Base rotation speed
+            public const double RotationSpeedIncrement = 5;  // Speed change per wheel tick
+            public const double MaxRotationSpeed = 120;  // Maximum rotation speed
+            public const double MinRotationSpeed = -120;  // Minimum rotation speed (negative for opposite direction)
             public static readonly Vector Gravity = new Vector(0, 500);
         }
 
@@ -39,10 +42,12 @@ namespace PhysicsDemo
             public Vector CirclePosition { get; set; }
             public Vector CircleVelocity { get; set; }
             public Point ContainerCenter { get; set; }
+            public double CurrentRotationSpeed { get; set; }  
 
             public SimulationState()
             {
                 ContainerPolygon = new List<Point>();
+                CurrentRotationSpeed = PhysicsConstants.BaseRotationSpeed; 
             }
         }
 
@@ -84,6 +89,7 @@ namespace PhysicsDemo
         {
             InitializeSimulation();
             InitializeVisuals();
+            InitializeEventHandlers(); 
             StartSimulation();
         }
 
@@ -105,6 +111,17 @@ namespace PhysicsDemo
             _circleEllipse = CreateCircleEllipse();
             SimulationCanvas.Children.Add(_containerPath);
             SimulationCanvas.Children.Add(_circleEllipse);
+        }
+
+        /// <summary>
+        /// Initializes all event handlers for the simulation.
+        /// </summary>
+        private void InitializeEventHandlers()
+        {
+            SimulationCanvas.MouseLeftButtonDown += SimulationCanvas_MouseLeftButtonDown;
+            SimulationCanvas.MouseMove += SimulationCanvas_MouseMove;
+            SimulationCanvas.MouseLeftButtonUp += SimulationCanvas_MouseLeftButtonUp;
+            SimulationCanvas.MouseWheel += SimulationCanvas_MouseWheel;  // Add MouseWheel handler
         }
 
         /// <summary>
@@ -145,6 +162,20 @@ namespace PhysicsDemo
             _stopwatch.Start();
             _lastTime = _stopwatch.Elapsed;
             CompositionTarget.Rendering += OnRendering;
+        }
+
+        #endregion
+
+        #region Math.Clamp integration
+
+        /// <summary>
+        /// Clamps a value between a minimum and maximum range.
+        /// </summary>
+        private double ClampValue(double value, double min, double max)
+        {
+            if (value < min) return min;
+            if (value > max) return max;
+            return value;
         }
 
         #endregion
@@ -283,7 +314,8 @@ namespace PhysicsDemo
         /// </summary>
         private void UpdatePhysics(double dt)
         {
-            _state.ContainerAngle = (_state.ContainerAngle + PhysicsConstants.RotationSpeed * dt) % 360;
+            // Use CurrentRotationSpeed instead of constant RotationSpeed
+            _state.ContainerAngle = (_state.ContainerAngle + _state.CurrentRotationSpeed * dt) % 360;
             _state.CircleVelocity += PhysicsConstants.Gravity * dt;
             _state.CirclePosition += _state.CircleVelocity * dt;
 
@@ -448,6 +480,24 @@ namespace PhysicsDemo
         #endregion
 
         #region Mouse Event Handlers
+
+        /// <summary>
+        /// Handles the mouse wheel event to control rotation speed and direction.
+        /// </summary>
+        private void SimulationCanvas_MouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            // Calculate new rotation speed based on wheel delta
+            double speedChange = e.Delta > 0 ?
+                PhysicsConstants.RotationSpeedIncrement :
+                -PhysicsConstants.RotationSpeedIncrement;
+
+            // Update current rotation speed with clamping
+            _state.CurrentRotationSpeed = ClampValue(
+                _state.CurrentRotationSpeed + speedChange,
+                PhysicsConstants.MinRotationSpeed,
+                PhysicsConstants.MaxRotationSpeed
+            );
+        }
 
         /// <summary>
         /// Handles mouse button down event for container dragging.
