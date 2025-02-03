@@ -9,19 +9,47 @@
         </LinearGradientBrush>
     </Window.Background>
     <Grid>
-        <Border Background="#CCFFFFFF" CornerRadius="10" Padding="5" Margin="10" HorizontalAlignment="Left" VerticalAlignment="Top">
-            <StackPanel>
-                <TextBlock Text="Выберите фигуру:" FontWeight="Bold" Foreground="DarkSlateGray" Margin="0,0,0,5"/>
-                <ComboBox x:Name="ShapeComboBox" Width="150" SelectionChanged="ShapeComboBox_SelectionChanged">
-                    <ComboBoxItem Content="Square" IsSelected="True"/>
-                    <ComboBoxItem Content="Triangle"/>
-                    <ComboBoxItem Content="Pentagon"/>
-                </ComboBox>
-            </StackPanel>
-        </Border>
-        <Canvas x:Name="SimulationCanvas" Background="Transparent" Margin="0,80,0,0"
-            MouseLeftButtonDown="SimulationCanvas_MouseLeftButtonDown"
-            MouseMove="SimulationCanvas_MouseMove"
-            MouseLeftButtonUp="SimulationCanvas_MouseLeftButtonUp"/>
+        <StackPanel Orientation="Horizontal" Margin="10">
+            <Border CornerRadius="10" Padding="10" Margin="0,0,10,0">
+                <Border.Background>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                        <GradientStop Color="#CCFFFFFF" Offset="0"/>
+                        <GradientStop Color="Transparent" Offset="0.3"/>
+                    </LinearGradientBrush>
+                </Border.Background>
+                <StackPanel>
+                    <TextBlock Text="Выберите фигуру:" FontWeight="Bold" Foreground="DarkSlateGray" Margin="0,0,0,5"/>
+                    <ComboBox x:Name="ShapeComboBox" Width="150" SelectionChanged="ShapeComboBox_SelectionChanged">
+                        <ComboBoxItem Content="Square" IsSelected="True"/>
+                        <ComboBoxItem Content="Triangle"/>
+                        <ComboBoxItem Content="Pentagon"/>
+                        <ComboBoxItem Content="Hexagon"/>
+                        <ComboBoxItem Content="Octagon"/>
+                    </ComboBox>
+                </StackPanel>
+            </Border>
+
+            <Border CornerRadius="10" Padding="10">
+                <Border.Background>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                        <GradientStop Color="#CCFFFFFF" Offset="0"/>
+                        <GradientStop Color="Transparent" Offset="0.3"/>
+                    </LinearGradientBrush>
+                </Border.Background>
+                <StackPanel>
+                    <TextBlock Text="Выберите объект:" FontWeight="Bold" Foreground="DarkSlateGray" Margin="0,0,0,5"/>
+                    <ComboBox x:Name="BallTypeComboBox" Width="150" SelectionChanged="BallTypeComboBox_SelectionChanged">
+                        <ComboBoxItem Content="Обычный шар" IsSelected="True"/>
+                        <ComboBoxItem Content="Колесо"/>
+                        <ComboBoxItem Content="Металлический шар"/>
+                    </ComboBox>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+
+        <Canvas x:Name="SimulationCanvas" Background="Transparent" Margin="10,80,10,10"
+                MouseLeftButtonDown="SimulationCanvas_MouseLeftButtonDown"
+                MouseMove="SimulationCanvas_MouseMove"
+                MouseLeftButtonUp="SimulationCanvas_MouseLeftButtonUp"/>
     </Grid>
 </Window>
